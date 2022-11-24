@@ -301,7 +301,7 @@ export function build_queryByDayOnStation(StationName, date){
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX weo: <http://ns.inria.fr/meteo/ontology/>
     prefix wevp: <http://ns.inria.fr/meteo/vocab/weatherproperty/> 
-        SELECT  ?time (?n as ?stationName)   ((?v - 273.15) as ?Value)
+        SELECT  ?time (?n as ?stationName) ((?v - 273.15) as ?temperature)
         WHERE 
         {
             VALUES ?date {"${date}"^^xsd:dateTime}
@@ -320,4 +320,5 @@ export function build_queryByDayOnStation(StationName, date){
         GROUP BY ?n ?time
         ORDER BY ?n ?time
     `
+    return query
 }

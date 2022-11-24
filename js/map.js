@@ -118,40 +118,16 @@ function initMap(){
                         let tmpChartByYears = new LineChart(newdata,"brush-chart",current_region_code);
                         tmpChartByYears.drawChart();
                         tmpChartByYears.drawLegend("chart-legend-hour1");
+                        tmpChartByYears.drawBrush("brush-chart");
                         
                         let tmpChartByYearsZoom = new LineChart(newdata,"line-chart-hour1",current_region_code)
                         tmpChartByYearsZoom.drawChart();
 
                         //A revoir:
 
-                        var data = [{id:"debut_matin_3h", value:2000}, {id:"matin_6h", value:5500}, {id:"fin_matin_9h", value:300}, {id:"midi_12h", value:500}, {id:"après_midi_15h", value:20}, {id:"debut_soiree_18h", value:6000}, {id:"fin_soiree_21h", value:2000}, {id:"minuit_0h", value:5500}]
-                        var data2 = [{id:"debut_matin_3h", value:3000}, {id:"matin_6h", value:1}, {id:"fin_matin_9h", value:3}, {id:"midi_12h", value:5000}, {id:"après_midi_15h", value:2000}, {id:"debut_soiree_18h", value:600}, {id:"fin_soiree_21h", value:200}, {id:"minuit_0h", value:5500}]
                         
-                        var margin = {top: 10, right: 10, bottom: 10, left: 10},
-                            width = 600 - margin.left - margin.right,
-                            height = 600 - margin.top - margin.bottom,
-                            innerRadius = 80,
-                            outerRadius = Math.min(width, height) / 4;  
-
-                        var innerRadius2 = outerRadius,
-                        outerRadius2 = innerRadius2+outerRadius-innerRadius
-                    
-                        //delete the svg if it already exists
-                        d3.select("#donut-chart-div").selectAll("svg").remove();
-                        // append the svg object to the body of the page
-                        var svg = d3.select("#donut-chart-div")
-                        .append("svg")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.top + margin.bottom)
-                        .append("g")
-                            .attr("transform", "translate(" + width / 2 + "," + ( height/2+100 )+ ")") // Add 100 on Y translation, cause upper bars are longer
                         
-                        //
                         
-                        let donutChart1 = new DonutChart(svg,data,innerRadius,outerRadius);
-                        let donutChart2 = new DonutChart(svg,data2,innerRadius2,outerRadius2);
-                        donutChart1.drawChart();
-                        donutChart2.drawChart();
 
                         /*
                         LineChart.data = newdata;

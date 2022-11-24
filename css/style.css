@@ -294,3 +294,7 @@ table#t01 th {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+
+.graph-svg-component {
+  background-color: black;
+}

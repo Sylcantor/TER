@@ -16,20 +16,21 @@ export class DonutChart{
         var data = this.data;
 
         console.log("data");
-        console.log(data.map(function(d) { return d.id; }));
+        console.log(data);
         
         // X scale
         var x = d3.scaleBand()
             .range([0, 2 * Math.PI])    // X axis goes from 0 to 2pi = all around the circle. If I stop at 1Pi, it will be around a half circle
             .align(0)                  // This does nothing ?
-            .domain( data.map(function(d) { return d.id; }) ); // The domain of the X axis is the list of states.
+            .domain( data.map((d)=>{ return d.id; }) ); // The domain of the X axis is the list of states.
 
-        
+        //get max value of data
+        const max = d3.max(data, function(d) { return d.value; });
 
         // Y scale
         var y = d3.scaleRadial()
             .range([innerRadius, outerRadius])   // Domain will be define later.
-            .domain([0, 10000]); // Domain of Y is from 0 to the max seen in the data
+            .domain([0, max]); // Domain of Y is from 0 to the max seen in the data
     
 
         // Add bars
@@ -41,9 +42,9 @@ export class DonutChart{
             .attr("fill", "#69b3a2")
             .attr("d", d3.arc()     // imagine your doing a part of a donut plot
                 .innerRadius(innerRadius)
-                .outerRadius(function(d) { return y(d.value); })
-                .startAngle(function(d) { return x(d.id); })
-                .endAngle(function(d) { return x(d.id) + x.bandwidth(); })
+                .outerRadius((d) => { return y(d.value); })
+                .startAngle((d)=> { return x(d.id); })
+                .endAngle((d)=> { return x(d.id) + x.bandwidth(); })
                 .padAngle(0.01)
                 .padRadius(innerRadius))
                 

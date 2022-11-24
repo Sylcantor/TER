@@ -1,0 +1,296 @@
+body {
+  margin: 20px 50px;
+}
+
+p {
+  margin: 20px 20px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+code {
+  background: #F1F1F1;
+}
+
+a:link,
+a:visited {
+  color: blue;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: red;
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+#svg {
+  display: block;
+  width: 250px;
+}
+
+.column {
+  float: left;
+}
+
+/* Middle column */
+.column.middle {
+  width: 25%;
+}
+
+/* Left column */
+.column.left {
+  width: 30%;
+}
+
+/* Right column */
+.column.right {
+  width: 45%;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column.left,
+  .column.middle,
+  .column.right {
+width: 100%;
+  }
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.page-header {
+  border-radius: 6px;
+  padding: 5px 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+h1.page-header {
+  background-color: rgb(75, 125, 190);
+  color: white;
+}
+
+h2.page-header {
+  background-color: rgb(218, 229, 241);
+}
+
+button.page-header {
+  background-color: rgb(75, 125, 190);
+  color: white;
+}
+
+h3.page-header {
+  background-color: rgb(238, 238, 238);
+}
+
+.footer {
+  background-color: #F1F1F1;
+  text-align: center;
+  padding: 10px;
+}
+
+table {
+  width: 98%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 5px;
+  text-align: left;
+}
+
+table#t01 tr:nth-child(even) {
+  background-color: rgb(238, 238, 238);
+}
+
+table#t01 tr:nth-child(odd) {
+  background-color: transparent;
+}
+
+table#t01 th {
+  background-color: rgb(218, 229, 241);
+  color: black;
+}
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+/* For the collapsible sections. */
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background-color: #ffffff;
+}
+
+.map-tooltip {
+  position: absolute;
+  text-align: center;
+  z-index: 1000;
+  color: black;
+  width: 275px;
+  height: 37px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: pink;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#map {
+  width: 100%;
+  height: 600px;
+}
+
+.line-chart-div1 {
+  width: 50%;
+  padding: 15px;
+}
+
+.line-chart-div2 {
+  width: 50%;
+  padding: 15px;
+}
+
+.map-border {
+  fill: #000;
+  fill-opacity: .2;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.map-border:hover {
+  fill: brown;
+  fill-opacity: .7;
+}
+
+.header {
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  background-color: rgb(75, 125, 190);
+  /* color: blueviolet; */
+  color: white;
+}
+
+.line-chart-div {
+  width: 50%;
+  height: 400px;
+  position: relative;
+}
+
+.dataviz {
+  width: 100vw;
+  /*height: 100vh;*/
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dataviz-1 {
+  display: flex;
+  justify-content: space-around;
+  width: 35%;
+  position: relative;
+  height: 80%;
+  flex-direction: column;
+}
+
+.dataviz-2 {
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+  position: relative;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.separator {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 25px;
+  position: center;
+  top: 50%;
+}
+
+.objecttable {
+  border-collapse: collapse;
+}
+
+
+.table {
+  --bs-table-color: var(--bs-gray-100);
+  --bs-table-bg: var(--bs-gray-100);
+  --bs-table-border-color: transparent;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.chart-tooltip {
+  /* NEW */
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 12px;
+  left: 400px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 500px;
+  width: 15%;
+  z-index: 10;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WeKG-MF Visualisations</title>
+    <meta charset="utf-8" />
+    <!-- CSS only -->
+    <link rel="stylesheet" href="./css/leaflet.css" />
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- Adding necessary libraries -->
+    <script src="./js/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3-scale-radial.js"></script>
+    <script src="./js/jquery-1.9.1.js"></script>
+    <script src="./js/leaflet.js"></script>
+    <script src="./js/colorbrewer.v1.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <!-- Adding the main script -->
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>WeKG-MF Knowledge Graph Exploration and Navigation</h1>
+    </div>
+    <br />
+    <button type="button" class="collapsible">~~Description~~</button>
+    <div class="content" style="height:30%;overflow:auto">
+        <p>
+            The recent trend of adopting linked-data principles to
+            integrate and publish semantically described open data using
+            W3C standards has led to a large amount of available
+            resources. In particular, meteorological sensor data have been
+            uplifted into public weather-focused RDF graphs, such as
+            WeKG-MF which offers access to a large set of meteorological
+            variables described through spatial and temporal
+            dimensions. Nevertheless, these resources include huge numbers
+            of raw observations that are tedious to explore by lay
+            users. In this article, we aim at providing them with visual
+            exploratory "tours", benefiting from RDF data cubes to present
+            high-level aggregated views together with on-demand
+            fine-grained details through a unified Web interface.
+        </p>
+    </div>
+    <!-- Beginning of the Demonstrator Collapsible-->
+    <button type="button" class="page-header collapsible">~~Explore WeKG-MF~~</button>
+    <div class="content" style="height:80%;overflow:auto">
+        <p>
+            The following map allows to visualise some of the information available in or computed from the
+            WeKG-MF RDF dataset. By Clicking a French region, one can access weather stations and some of their
+            climatic records. On the right side, the top chart offers a brush feature to zoom on a specific time
+            span on the second chart. By hovering the latter, one can see unaggregated details in a third chart
+            down below.
+        </p>        
+        <div class="dataviz">
+
+            <div class="dataviz-1">
+                <div id="map"></div>
+            </div>
+            <div class="dataviz-2">
+                <p></p><br />
+                <div class="line-chart-div" style="width:600px; height:100px; ">
+                    <svg id="brush-chart"></svg>
+                </div>
+                <div class="line-chart-div1" style="width:600px; height:400px; ">
+                    <svg id="chart-legend-hour1" width="600" height="80"></svg>
+                    <svg id="line-chart-hour1"></svg>
+                </div>
+                <div id="donut-chart-div" style="width:600px; height:400px; "></div>
+                <div class="line-chart-div2" style="width:600px; height:200px; ">
+                    <svg id="chart-legend-hour2" width="600" height="80"></svg>
+                    <svg id="line-chart-hour2"></svg>
+                </div>
+            </div>
+        </div>
+        <div class="chart-tooltip"> </div>
+    </div>
+    <!-- End of the Demonstrator Collapsible-->
+    <footer>
+        <hr />
+        <div class="footer">
+            Last update: August 2022
+        </div>
+    </footer>
+</body>
+
+</html>

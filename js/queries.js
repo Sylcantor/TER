@@ -294,7 +294,7 @@ export function build_queryByYearOnStation(StationName)
 }
 
 
-export function build_queryByDayOnStation(StationName, date){
+export function build_queryTmpByDayOnStation(StationName, date){
     let query = `
     PREFIX sosa: <http://www.w3.org/ns/sosa/>
     PREFIX wep: <http://ns.inria.fr/meteo/ontology/property/>
@@ -307,6 +307,35 @@ export function build_queryByDayOnStation(StationName, date){
             VALUES ?date {"${date}"^^xsd:dateTime}
             ?obs a <http://ns.inria.fr/meteo/ontology/MeteorologicalObservation>;
             sosa:observedProperty wevp:airTemperature ;
+            sosa:hasSimpleResult  ?v; 
+            wep:madeByStation ?station ;
+            sosa:resultTime ?time .
+            ?station rdfs:label ?n ;  weo:stationID ?stationID .
+
+            FILTER(?time>= xsd:date(?date))
+            BIND ( bif:dateadd('day', 1, xsd:date(?date)) as ?jourSuivant)
+            FILTER(?time < ?jourSuivant)
+            VALUES ?n{"${StationName}"}
+        } 
+        GROUP BY ?n ?time
+        ORDER BY ?n ?time
+    `
+    return query
+}
+
+export function build_queryPrecipByDayOnStation(StationName, date){
+    let query = `
+    PREFIX sosa: <http://www.w3.org/ns/sosa/>
+    PREFIX wep: <http://ns.inria.fr/meteo/ontology/property/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX weo: <http://ns.inria.fr/meteo/ontology/>
+    prefix wevp: <http://ns.inria.fr/meteo/vocab/weatherproperty/> 
+        SELECT  ?time (?n as ?stationName) (max(abs(?v)) as ?precipitation)
+        WHERE 
+        {
+            VALUES ?date {"${date}"^^xsd:dateTime}
+            ?obs a <http://ns.inria.fr/meteo/ontology/MeteorologicalObservation>;
+            sosa:observedProperty wevp:precipitationAmount ;
             sosa:hasSimpleResult  ?v; 
             wep:madeByStation ?station ;
             sosa:resultTime ?time .

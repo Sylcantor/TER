@@ -1,12 +1,16 @@
 import SPARQL from "./sparql.js";
 import {LineChart} from "./charts/linechart.js";
+import { LineChartRegion } from "./charts/linechartregion.js";
 import {DonutChart} from "./charts/donutchart.js";
+import {CheckBoxList} from "./checkBoxList.js";
 import "./leaflet.js";
 import {regions} from "./regions.js";
-import {buildQuery_stations, build_queryByYearOnStation} from "./queries.js";
+import {buildQuery_stations, build_queryByYearOnStation,buildQuery_slices1} from "./queries.js";
 
 function initMap(){
 
+    var boolean = false;
+    let checkboxes;
 
     var endpoint = new SPARQL({
         apikey: "YOUR-API-KEY-HERE",
@@ -31,7 +35,6 @@ function initMap(){
     var transform = d3.geoTransform({ point: projectPoint }),
         path = d3.geoPath().projection(transform);
 
-    var boolean = true;
     var current_region_code;
     var current_region_name;
     // create path elements for each of the features
@@ -57,9 +60,29 @@ function initMap(){
                 .done(function (json) {
                     //console.log("new data = ", regions.features[d].properties.code, json)
                     // onSuccessMember4(json, 'month', regions.features[d].properties.code)
-                    drawCharts(json, regions.features[d].properties.code)
+                    
+                    function getData(json) {
+                        let newdata = []
+                        let data = json.results.bindings
+                        
+                        for (let i = 0; i < data.length; i++) {
+                            newdata.push({
+                                date: data[i]['date'].value,
+                                station: data[i]['Nstation'].value,
+                                temp_avg: data[i]['temp_avg'].value,
+                                region: data[i]['label'].value
+                            })
+                            
+                        }
+            
+                        return newdata
+                    }
+
+                    let data = getData(json)
+                    let regionChart = new LineChartRegion(data,"line-chart-hour1",current_region_code)
+                    regionChart.drawChart()
                 });
-            */  
+            */
         })
 
     d3_features.attr("d", path)
@@ -123,6 +146,15 @@ function initMap(){
                         let tmpChartByYearsZoom = new LineChart(newdata,"line-chart-hour1",current_region_code)
                         tmpChartByYearsZoom.drawChart();
 
+                        //remove checkboxes
+                        if(boolean==false){
+                            checkboxes = new CheckBoxList(["2017","2018","2019","2020"],tmpChartByYearsZoom);
+                            checkboxes.setupCheckBoxList();
+                            boolean = true;
+                        }
+                        if(boolean==true){
+                            checkboxes.checkedAllCheckBoxes();
+                        }
                         //A revoir:
 
                         

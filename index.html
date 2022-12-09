@@ -15,6 +15,7 @@
     <script src="./js/leaflet.js"></script>
     <script src="./js/colorbrewer.v1.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <!-- Adding the main script -->
     <script type="module" src="js/main.js"></script>
 </head>
@@ -66,7 +67,10 @@
                     <svg id="chart-legend-hour1" width="600" height="80"></svg>
                     <svg id="line-chart-hour1"></svg>
                 </div>
-                <div id="donut-chart-div" style="width:600px; height:400px; "></div>
+                    <div id="donut-chart-div" style="width:40px; height:40px;">
+                        <svg id="donut-chart"></svg>
+                    </div>
+                    <div id="table_div"></div>             
                 <div class="line-chart-div2" style="width:600px; height:200px; ">
                     <svg id="chart-legend-hour2" width="600" height="80"></svg>
                     <svg id="line-chart-hour2"></svg>

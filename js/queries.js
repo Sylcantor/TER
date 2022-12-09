@@ -338,7 +338,7 @@ export function build_queryPrecipByDayOnStation(StationName, date){
             sosa:observedProperty wevp:precipitationAmount ;
             sosa:hasSimpleResult  ?v; 
             wep:madeByStation ?station ;
-            sosa:resultTime ?time .
+            sosa:resultTime ?time . 
             ?station rdfs:label ?n ;  weo:stationID ?stationID .
 
             FILTER(?time>= xsd:date(?date))
@@ -351,3 +351,71 @@ export function build_queryPrecipByDayOnStation(StationName, date){
     `
     return query
 }
+
+export function build_queryPrecipFromMonthOnRegion(insee,date){
+
+}
+
+
+/*Precipitation
+
+PREFIX dct: <http://purl.org/dc/terms/>
+ PREFIX sosa: <http://www.w3.org/ns/sosa/>
+    PREFIX wep: <http://ns.inria.fr/meteo/ontology/property/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX weo: <http://ns.inria.fr/meteo/ontology/>
+    prefix wevp: <http://ns.inria.fr/meteo/vocab/weatherproperty/> 
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    PREFIX geosparql:  <http://www.opengis.net/ont/geosparql#> 
+    SELECT max(?v) as ?prepMax ?station WHERE {
+          VALUES ?date {"2021-02-03"^^xsd:dateTime}
+          ?obs a <http://ns.inria.fr/meteo/ontology/MeteorologicalObservation>;
+            sosa:observedProperty wevp:precipitationAmount ;
+            sosa:hasSimpleResult  ?v; 
+            wep:madeByStation ?station ;
+            sosa:resultTime ?time .
+            #?station rdfs:label ?n ;  dct:spatial [ wdt:P131 [rdfs:label ?label ; wdt:P2585 '75']] .
+FILTER(month(?time) = month(?date))
+FILTER(year(?time) = year(?date))
+}
+GROUP BY ?station
+
+*/
+
+/*Temperature
+
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+    PREFIX wep: <http://ns.inria.fr/meteo/ontology/property/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    prefix weo:  <http://ns.inria.fr/meteo/ontology/> 
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+select ?insee (MAX(?maxTemp) as ?maxTemp) ?dateDebPeriod ?dateFinPeriod
+{
+    select ?insee ?stationName ((MAX(?v)- 273.15) as ?maxTemp) ?dateDebPeriod ?dateFinPeriod where 
+    {
+VALUES ?dateDebPeriod {"2021-02-01"} # VALUES ?dateDebutPeriod {"`+ startDate+`"}
+        VALUES ?dateFinPeriod {"2021-02-28"} # VALUES ?dateFinPeriod {"`+ endDate+`"}
+VALUES ?insee  { "75"}  #VALUES ?insee  {"`+ insee+`"} 
+        
+        
+
+        ?obs a  <http://ns.inria.fr/meteo/ontology/MeteorologicalObservation>; 
+        sosa:observedProperty <http://ns.inria.fr/meteo/vocab/weatherproperty/maxAirTemperature> ;
+        sosa:hasSimpleResult ?v; 
+        wep:madeByStation ?station ;
+        sosa:resultTime ?t .
+        ?station rdfs:label ?stationName .
+
+?station a weo:WeatherStation ; dct:spatial ?e; rdfs:label ?Nstation.                            
+        ?e wdt:P131 ?item .
+        ?item rdfs:label ?label ; wdt:P2585  ?insee .
+
+        FILTER(?t>= xsd:date(?dateDebPeriod ))
+        FILTER(?t < xsd:date(?dateFinPeriod))
+    }
+    order by ?stationName
+}
+
+*/

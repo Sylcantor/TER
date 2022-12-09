@@ -233,7 +233,7 @@ table#t01 th {
 .dataviz-1 {
   display: flex;
   justify-content: space-around;
-  width: 35%;
+  width: 30%;
   position: relative;
   height: 80%;
   flex-direction: column;
@@ -297,4 +297,11 @@ table#t01 th {
 
 .graph-svg-component {
   background-color: black;
+}
+
+#table_div {
+  background-color: black;
+  margin-left: 300px;
+  margin-top: 30px;
+  width: 50%;
 }

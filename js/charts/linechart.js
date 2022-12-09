@@ -2,6 +2,7 @@ import SPARQL from "../sparql.js";
 
 import {QueryObservationsByDate,build_queryTmpByDayOnStation,build_queryPrecipByDayOnStation} from "../queries.js";
 import {DonutChart} from "./donutchart.js";
+import {TableChart} from "./table.js";
 
 let margin = { left: 40, right: 20, bottom: 20, top: 0 }
 let color = d3.scaleOrdinal()
@@ -47,7 +48,8 @@ export class LineChart{
         var svgChart = d3.select(`svg#${this.id}`);
         svgChart.selectAll('g').remove()
         svgChart.selectAll("text").remove()
-    
+         
+
         let width = svgChart.node().parentNode.clientWidth,
             height = svgChart.node().parentNode.clientHeight;
     
@@ -158,12 +160,10 @@ export class LineChart{
                     // console.log("Temp----here", yTemp);
                     // console.log("Date----here", xDate);
                     tooltip.html("<b> Station: </b>" + station + "</br>" + "<b>  Date:</b> " + xDate.split('T')[0] + "</br>" + "<b> Daily Avg. Temp.:</b> " + yTemp
-                    + "</br>"
-                    + "<div id='donut-chart-div' style='width:400px; height:400px;'></div>"
-                    );
+                    + "</br>");
 
-                    var margin = {top: 10, right: 10, bottom: 10, left: 10},
-                                width = 400 - margin.left - margin.right,
+                    let margin = {top: 0, right: 0, bottom: 0, left: 0},
+                                width = 400 - margin.left - margin.right+100,
                                 height = 400 - margin.top - margin.bottom,
                                 innerRadius = 10,
                                 outerRadius = Math.min(width, height) / 8;  
@@ -174,16 +174,20 @@ export class LineChart{
                     //delete the svg if it already exists
                     d3.select("#donut-chart-div").selectAll("svg").remove();
                     // append the svg object to the body of the page
-
+                    
+                    //var svgDonut = d3.select(`svg#${this.id}`);
+                    //svgDonut.selectAll('g').remove()
+                    //svgDonut.selectAll("text").remove()
+                    //svgChart.selectAll("rect").remove()
 
                     var svg = d3.selectAll("#donut-chart-div")
                     .append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
+                        .attr("width", width)
+                        .attr("height", height)
 
                         
                     .append("g")
-                        .attr("transform", "translate(" + width / 3.5 + "," + ( height/3.5+100 )+ ")") // Add 100 on Y translation, cause upper bars are longer
+                        .attr("transform", "translate(" + width / 4 + "," + ( height/4+100 )+ ")") // Add 100 on Y translation, cause upper bars are longer
                     
                     //
                     
@@ -195,25 +199,39 @@ export class LineChart{
                             }
                         });
 
-                        let donutChart1 = new DonutChart(svg,res,innerRadius,outerRadius,"green",30);
+                        let donutChart1 = new DonutChart(svg,res,innerRadius,outerRadius,"red",30);
                         donutChart1.drawChart();
-                        
-                    });
 
-                    endpoint.query(build_queryPrecipByDayOnStation(station, xDate.split('T')[0])).done((json) => {
-                        let res = json.results.bindings.map(d => {
-                            return {
-                                id: d.time.value,
-                                value: d.precipitation.value
+                        endpoint.query(build_queryPrecipByDayOnStation(station, xDate.split('T')[0])).done((json) => {
+                            let res2 = json.results.bindings.map(d => {
+                                return {
+                                    id: d.time.value,
+                                    value: d.precipitation.value
+                                }
+                            });
+    
+    
+                            
+                            let donutChart2 = new DonutChart(svg,res2,innerRadius2,outerRadius2,"blue",8);
+                            donutChart2.drawChart();
+                            donutChart2.drawLegend();
+                            
+                            //serialize data for google chart table with labels
+
+                            let data = [[{label: 'Time', type: 'string'}, {label: 'Temperature', type: 'number'}, {label: 'Precipitation', type: 'number'}]]
+                            for (let i = 0; i < res.length; i++) {
+                                data.push([res[i].id, parseFloat(res[i].value), parseFloat(res2[i].value)])
                             }
+                            //draw TableChart
+
+                            let table = new TableChart(data, 'table_div');
+                            table.drawTable();
+
                         });
-
-
-                        
-                        let donutChart2 = new DonutChart(svg,res,innerRadius2,outerRadius2,"blue",8);
-                        donutChart2.drawChart();
                         
                     });
+
+                    
 
                     
         

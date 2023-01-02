@@ -96,12 +96,13 @@ export function buildQuery_slices(insee) {
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
     
-    SELECT ?month (AVG(?temp_avg) as ?avg_temp)  (AVG(?temp_min) as ?min_temp) (AVG(?temp_max) as ?max_temp) ?label WHERE
+    SELECT ?year ?month ?date (AVG(?temp_avg) as ?avg_temp)  (AVG(?temp_min) as ?min_temp) (AVG(?temp_max) as ?max_temp) ?label WHERE
     {
-        VALUES ?insee  {'`+ insee +`' } 
+        VALUES ?insee  {'`+ insee +`' }
+        VALUES ?year  {"2021"^^xsd:gYear "2020"^^xsd:gYear "2019"^^xsd:gYear "2018"^^xsd:gYear "2017"^^xsd:gYear }
         ?s  a qb:Slice ;
         wes-dimension:station ?station ;
-        wes-dimension:year "2021"^^xsd:gYear ;
+        wes-dimension:year ?year ;
         qb:observation [
         a qb:Observation ;
         wes-attribute:observationDate ?date ;
@@ -114,13 +115,14 @@ export function buildQuery_slices(insee) {
         ?item rdfs:label ?label ; wdt:P2585  ?insee .
         BIND(MONTH(?date) as ?month)
     }
-    GROUP BY ?month ?label
-    ORDER BY ?month
+    GROUP BY ?date ?year ?month ?label
+    ORDER BY ?date
     `
     return query
     
 }
 
+// temp avg for a region
 export function buildQuery_slices1(insee) {
     //console.log('code = ', insee)
     var query = `PREFIX wes: <http://ns.inria.fr/meteo/observationslice/>
@@ -137,7 +139,7 @@ export function buildQuery_slices1(insee) {
     SELECT distinct ?date ?Nstation ?temp_avg ?label ?insee WHERE
     {
         VALUES ?insee  {'`+ insee +`' } 
-        VALUES ?year  {"2021"^^xsd:gYear "2020"^^xsd:gYear "2019"^^xsd:gYear }
+        VALUES ?year  {"2021"^^xsd:gYear "2020"^^xsd:gYear "2019"^^xsd:gYear "2018"^^xsd:gYear "2017"^^xsd:gYear }
         ?s  a qb:Slice ;
         wes-dimension:station ?station ;
         wes-dimension:year ?year ;
@@ -256,7 +258,7 @@ export function build_queryByMonth(month, insee)
     
 }
 
-//build a query that retrun the average temperature by day for last 3 years for a given station
+//build a query that retrun the average temperature by day for last 5 years for a given station
 export function build_queryByYearOnStation(StationName)
 {
     var query = `PREFIX weo: <http://ns.inria.fr/meteo/ontology/>

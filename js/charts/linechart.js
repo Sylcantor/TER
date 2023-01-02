@@ -118,10 +118,22 @@ export class LineChart{
         console.log(scales[this.id])
 
         
+        console.log("sumstat", sumstat);
+        
         lineGroup.append("path")
             .attr("fill", "none") //.attr("fill", d => color(d.key))
             .style('fill-opacity', 0.1)
-            .attr("stroke", d => color(d.key))
+            .style("stroke", function(d, i) { // définit la couleur de la ligne en fonction de l'index de l'élément
+                if (i >= sumstat.length - 5) { // si l'élément est parmi les 5 derniers
+                  return "red"; // définit la couleur en rouge
+                } else if(i >= sumstat.length - 10){ // définit la couleur en bleu
+                    return "blue";
+                } else if(i >= sumstat.length - 15){ // définit la couleur en bleu
+                    return "yellow";
+                } else {
+                  return color(d.key); // sinon, définit la couleur en noir
+                }
+              })
             .attr("stroke-width", 1.5)
             .attr("d", (d) => {
                 return d3.line()
@@ -130,6 +142,10 @@ export class LineChart{
                         return scales[this.id].x(new Date(d.date).setFullYear(0)) })
                     .y( (d) => { return scales[this.id].y(parseFloat(d.temp_avg)); })
                     (d.values)
+            })
+            .style("opacity", d => {
+                if (d.key[0] != '0') return 1;
+                else return 0;
             })
             .on("mouseout", () => d3.select(".chart-tooltip").style("display", "none"))
             .on('mouseover', (d)=> {
@@ -155,12 +171,26 @@ export class LineChart{
                     
                     var xDate = scales[this.id].x.invert(mouse[0])
                     xDate = d.key + xDate.toISOString().slice(4)
+
+                    //check if xDate[0] is 0 and set it to 2
+                    
+                    
                     var yTemp = scales[this.id].y.invert(mouse[1]).toFixed(3)
                     console.log(scales[this.id].y.invert(mouse[1]))
                     // console.log("Temp----here", yTemp);
                     // console.log("Date----here", xDate);
-                    tooltip.html("<b> Station: </b>" + station + "</br>" + "<b>  Date:</b> " + xDate.split('T')[0] + "</br>" + "<b> Daily Avg. Temp.:</b> " + yTemp
-                    + "</br>");
+
+                    if(xDate[0] == '0'){
+                        let region = this.data[0].region;
+                        xDate = "2" + xDate.slice(1);
+                        tooltip.html("<b> Region: </b>" + region + "</br>" + "<b>  Date:</b> " + xDate.split('T')[0] + "</br>" + "<b> Daily Avg. Temp.:</b> " + yTemp
+                        + "</br>");
+                    }
+                    else{
+                        tooltip.html("<b> Station: </b>" + station + "</br>" + "<b>  Date:</b> " + xDate.split('T')[0] + "</br>" + "<b> Daily Avg. Temp.:</b> " + yTemp
+                        + "</br>");
+                    }
+                    
 
                     let margin = {top: 0, right: 0, bottom: 0, left: 0},
                                 width = 400 - margin.left - margin.right+100,
@@ -191,44 +221,47 @@ export class LineChart{
                     
                     //
                     
+                    var res1;
+                    var res2;
+
                     endpoint.query(build_queryTmpByDayOnStation(station, xDate.split('T')[0])).done((json) => {
-                        let res = json.results.bindings.map(d => {
+                        res1 = json.results.bindings.map(d => {
                             return {
                                 id: d.time.value,
                                 value: d.temperature.value
                             }
                         });
 
-                        let donutChart1 = new DonutChart(svg,res,innerRadius,outerRadius,"red",30);
+                        let donutChart1 = new DonutChart(svg,res1,innerRadius,outerRadius,"red",30);
                         donutChart1.drawChart();
+ 
+                    });
 
-                        endpoint.query(build_queryPrecipByDayOnStation(station, xDate.split('T')[0])).done((json) => {
-                            let res2 = json.results.bindings.map(d => {
-                                return {
-                                    id: d.time.value,
-                                    value: d.precipitation.value
-                                }
-                            });
-    
-    
-                            
-                            let donutChart2 = new DonutChart(svg,res2,innerRadius2,outerRadius2,"blue",8);
-                            donutChart2.drawChart();
-                            donutChart2.drawLegend();
-                            
-                            //serialize data for google chart table with labels
-
-                            let data = [[{label: 'Time', type: 'string'}, {label: 'Temperature', type: 'number'}, {label: 'Precipitation', type: 'number'}]]
-                            for (let i = 0; i < res.length; i++) {
-                                data.push([res[i].id, parseFloat(res[i].value), parseFloat(res2[i].value)])
+                    endpoint.query(build_queryPrecipByDayOnStation(station, xDate.split('T')[0])).done((json) => {
+                        res2 = json.results.bindings.map(d => {
+                            return {
+                                id: d.time.value,
+                                value: d.precipitation.value
                             }
-                            //draw TableChart
-
-                            let table = new TableChart(data, 'table_div');
-                            table.drawTable();
-
                         });
                         
+                        console.log(res1)
+
+                        let donutChart2 = new DonutChart(svg,res2,innerRadius2,outerRadius2,"blue",8);
+                        donutChart2.drawChart();
+                        donutChart2.drawLegend();
+                        
+                        //serialize data for google chart table with labels
+
+                        let data = [[{label: 'Time', type: 'string'}, {label: 'Temperature', type: 'number'}, {label: 'Precipitation', type: 'number'}]]
+                        for (let i = 0; i < res1.length; i++) {
+                            data.push([res1[i].id, parseFloat(res1[i].value), parseFloat(res2[i].value)])
+                        }
+                        //draw TableChart
+
+                        let table = new TableChart(data, 'table_div');
+                        table.drawTable();
+
                     });
 
                     
@@ -279,18 +312,28 @@ export class LineChart{
                     })
                 }
             })
+
         
+
+      
+
+
         // new array of sumstat.keys
         //let yearsRange = sumstat.map(d => d.key);
         //console.log("yearsRange", yearsRange);
         //LineChart.drawLegend(yearsRange, this.data[0].region, "chart-legend-hour1",undefined,this.data[0].station);
     }
-    drawLegend(id){
+    drawLegend(id,yearsRange){
+
+
         
         var sumstat = d3.nest()
             .key(d => d.date.slice(0,4))
             .entries(this.data);
-        let yearsRange = sumstat.map(d => d.key);
+        
+        //let yearsRange = sumstat.map(d => d.key);
+
+        console.log("yearsRange", yearsRange);
 
         let region = this.data[0].region;
         let stationName = this.data[0].station;
@@ -426,6 +469,20 @@ export class LineChart{
         
     }
     update(yearsSelected){
+
+        //update legend line and text if year is selected
+        d3.select('svg#line-chart-hour1')
+        .selectAll('g.legendGroup')
+        .selectAll('line')
+        .style("opacity", (d) => {
+            if (yearsSelected.includes(d)) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        })
+
         d3.select('svg#line-chart-hour1')
             .selectAll('g.lineGroup')
             .selectAll("path")
@@ -447,5 +504,12 @@ export class LineChart{
                     return 0
                 }
             })
+        
+        // retire tous les elements commencant par '0' dans le tableau
+        yearsSelected = yearsSelected.filter((el) => {
+            return el != 0
+        })
+        this.drawLegend("chart-legend-hour1", yearsSelected)
+        
     }
 }

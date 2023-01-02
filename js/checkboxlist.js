@@ -7,8 +7,10 @@ export class CheckBoxList{
 
     setupCheckBoxList(){
 
+        
         //remove checkboxes if already exist
         let data = this.data;
+        
         data.forEach(element => {
             // generate id
             const id = element.replace(/\s/g, '');
@@ -32,6 +34,14 @@ export class CheckBoxList{
                 const selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
                 const selectedValues = Array.from(selectedCheckBoxes).map(checkbox => checkbox.value);
                 //console.log(selectedValues);
+                if(selectedValues.length == 1){
+                    console.log("selectedValues.length == 1");
+                    selectedValues.push('0' + selectedValues[0].slice(1));
+                    selectedValues.push('01' + selectedValues[0].slice(2));
+                    selectedValues.push('02' + selectedValues[0].slice(2));
+
+                    console.log(selectedValues);
+                }
                 this.chart.update(selectedValues);
             });
         });

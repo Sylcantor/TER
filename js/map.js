@@ -2,15 +2,20 @@ import SPARQL from "./sparql.js";
 import {LineChart} from "./charts/linechart.js";
 import { LineChartRegion } from "./charts/linechartregion.js";
 import {DonutChart} from "./charts/donutchart.js";
-import {CheckBoxList} from "./checkBoxList.js";
+import {CheckBoxList} from "./checkboxlist.js";
 import "./leaflet.js";
 import {regions} from "./regions.js";
-import {buildQuery_stations, build_queryByYearOnStation,buildQuery_slices1} from "./queries.js";
+import {buildQuery_stations, build_queryByYearOnStation,buildQuery_slices1,buildQuery_slices} from "./queries.js";
+
+
 
 function initMap(){
 
     var boolean = false;
     let checkboxes;
+
+    var regionData;
+    
 
     var endpoint = new SPARQL({
         apikey: "YOUR-API-KEY-HERE",
@@ -38,6 +43,7 @@ function initMap(){
     var current_region_code;
     var current_region_name;
     // create path elements for each of the features
+
     const d3_features = g.selectAll("path")
         .data(regions.features)
         .enter()
@@ -50,10 +56,16 @@ function initMap(){
             //console.log('clicked!')
 
             //display stations for some region on the map
+
+            console.log(regions.features[d].properties.code)
             endpoint.query(buildQuery_stations(regions.features[d].properties.code)).done(onSuccessMember1);
+
 
             current_region_code = regions.features[d].properties.code;
             current_region_name = regions.features[d].properties.nom;
+
+            
+
             /*
             //display air Temperatures Times Series on the map
             endpoint.query(buildQuery_slices1(regions.features[d].properties.code))
@@ -91,7 +103,7 @@ function initMap(){
     map.on("viewreset", reset);
     reset();
 
-    function onSuccessMember1(json) {
+    function onSuccessMember1(json){
 
         $(".leaflet-marker-icon").remove();
         $(".leaflet-popup").remove();
@@ -122,13 +134,22 @@ function initMap(){
                     });
                     */
                     let stationSelected = this._popup._content;
+
+
+                    console.log("stationSelected = ", stationSelected);
+
+                    console.log(current_region_code)
+
+
+                    
+
                     endpoint.query(build_queryByYearOnStation(stationSelected))
-                    .done(function (json) {
+                    .done((json) => {
                         //console.log("new data = ", regions.features[d].properties.code, json)
                         // onSuccessMember4(json, 'month', regions.features[d].properties.code)
                         //console.log("Le json de la querry :");
                         //console.log(json);
-                        
+
                         let newdata = json.results.bindings.map(d => {
                             return {
                                 date: d.date.value,
@@ -137,29 +158,73 @@ function initMap(){
                                 region : current_region_name
                             }
                         });
-                        console.log(newdata);
-                        let tmpChartByYears = new LineChart(newdata,"brush-chart",current_region_code);
-                        tmpChartByYears.drawChart();
-                        tmpChartByYears.drawLegend("chart-legend-hour1");
-                        tmpChartByYears.drawBrush("brush-chart");
-                        
-                        let tmpChartByYearsZoom = new LineChart(newdata,"line-chart-hour1",current_region_code)
-                        tmpChartByYearsZoom.drawChart();
 
-                        //remove checkboxes
-                        if(boolean==false){
-                            checkboxes = new CheckBoxList(["2017","2018","2019","2020"],tmpChartByYearsZoom);
-                            checkboxes.setupCheckBoxList();
-                            boolean = true;
-                        }
-                        if(boolean==true){
-                            checkboxes.checkedAllCheckBoxes();
-                        }
+                        endpoint.query(buildQuery_slices(current_region_code))
+                        .done((json) => {
+                            console.log(newdata);
+                            
+                            let res = json.results.bindings.map((item) => {
+                                let tmpDate = '0' + item.date.value.slice(1);
+                                return {
+                                    date: tmpDate,
+                                    station: stationSelected,
+                                    temp_avg: item.avg_temp.value,
+                                    region: current_region_name
+                                }
+                            })
+
+                            res = res.concat(
+                                json.results.bindings.map((item) => {
+                                    let tmpDate = '01' + item.date.value.slice(2);
+                                    return {
+                                        date: tmpDate,
+                                        station: stationSelected,
+                                        temp_avg: item.min_temp.value,
+                                        region: current_region_name
+                                    }
+                                })
+                            )
+
+                            res = res.concat(
+                                json.results.bindings.map((item) => {
+                                    let tmpDate = '02' + item.date.value.slice(2);
+                                    return {
+                                        date: tmpDate,
+                                        station: stationSelected,
+                                        temp_avg: item.max_temp.value,
+                                        region: current_region_name
+                                    }
+                                })
+                            )
+
+                            //concatenate the two arrays
+                            newdata = newdata.concat(res);
+                            console.log("newdata = ");
+                            console.log(newdata);
+
+                            
+
+                            let tmpChartByYears = new LineChart(newdata,"brush-chart",current_region_code);
+                            tmpChartByYears.drawChart();
+                            tmpChartByYears.drawLegend("chart-legend-hour1",[2017,2018,2019,2020,2021]);
+                            tmpChartByYears.drawBrush("brush-chart");
+                            
+                            let tmpChartByYearsZoom = new LineChart(newdata,"line-chart-hour1",current_region_code)
+                            tmpChartByYearsZoom.drawChart();
+    
+                            //remove checkboxes
+                            if(boolean==false){
+                                checkboxes = new CheckBoxList(["2017","2018","2019","2020","2021"],tmpChartByYearsZoom);
+                                checkboxes.setupCheckBoxList();
+                                boolean = true;
+                            }
+                            if(boolean==true){
+                                checkboxes.checkedAllCheckBoxes();
+                            }
+                        });
+
+                       
                         //A revoir:
-
-                        
-                        
-                        
 
                         /*
                         LineChart.data = newdata;

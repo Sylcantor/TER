@@ -352,7 +352,24 @@ export class LineChart{
             .append('g')
         
         legendGroup.append('line')
-            .style("stroke", d => color(d))
+            .style("stroke", (d, i) => { // définit la couleur de la ligne en fonction de l'index de l'élément
+                // get 2 two first digit of string d
+                if(yearsRange[1][0] == "0"){
+                    if(d.slice(0,2) == "00"){
+                        return "yellow"
+                    } else if (d.slice(0,2) == "01"){
+                        return "blue"
+                    }
+                    else if (d.slice(0,2) == "02") {
+                        return "red"
+                    }
+                    else{
+                        return color(d);
+                    }
+                } else {
+                    return color(d);
+                }
+              })
             .style("stroke-width", 3)
             .attr("x1", 0)
             .attr("y1", (d, i) => 10 + i * 15)
@@ -364,7 +381,23 @@ export class LineChart{
             .attr('y', (d, i) => 10 + i * 17)
             .attr("type", "checkbox")
             .style('font-size', '11px')
-            .text(d => d)
+            .text(d => {
+                if(yearsRange[1][0] == "0"){
+                    if(d.slice(0,2) == "00"){
+                        return "Température moy region 20" + d.slice(2)
+                    } else if (d.slice(0,2) == "01"){
+                        return "Température moy minimale region 20" + d.slice(2)
+                    }
+                    else if (d.slice(0,2) == "02") {
+                        return "Température moy maximale 20" + d.slice(2)
+                    }
+                    else{
+                        return d;
+                    }
+                } else {
+                    return d;
+                }
+            })
         
         //legendGroup append checkbox   
         legendGroup.append('input')
@@ -506,9 +539,8 @@ export class LineChart{
             })
         
         // retire tous les elements commencant par '0' dans le tableau
-        yearsSelected = yearsSelected.filter((el) => {
-            return el != 0
-        })
+
+        console.log("yearsSelected", yearsSelected)
         this.drawLegend("chart-legend-hour1", yearsSelected)
         
     }

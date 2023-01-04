@@ -13,3 +13,4 @@ function init() {
     initCollapsibleSections();
     initMap();
 }
+    

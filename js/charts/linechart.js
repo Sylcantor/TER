@@ -182,7 +182,7 @@ export class LineChart{
 
                     if(xDate[0] == '0'){
                         let region = this.data[0].region;
-                        xDate = "2" + xDate.slice(1);
+                        xDate = "20" + xDate.slice(2);
                         tooltip.html("<b> Region: </b>" + region + "</br>" + "<b>  Date:</b> " + xDate.split('T')[0] + "</br>" + "<b> Daily Avg. Temp.:</b> " + yTemp
                         + "</br>");
                     }
